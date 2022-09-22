@@ -1,0 +1,17 @@
+body {
+    flex-direction: column;
+    background: blue;
+    color: white;
+}
+main {
+    flex-direction: row;
+    flex: 1 1 auto
+}
+article {
+    flex: 2;
+    overflow-y: scroll;
+} 
+aside {
+    flex: 1;
+    overflow-y: scroll;
+}
