@@ -1,7 +1,7 @@
 # Basic authentication
 
 
- Learning Objectives
+ * Learning Objectives
  What authentication means
  What Base64 is
  How to encode a string in Base64
