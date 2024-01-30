@@ -3,9 +3,9 @@
 Route module for the API
 """
 from os import getenv
+from flask_cors import (CORS, cross_origin)
 from api.v1.views import app_views
 from flask import Flask, jsonify, abort, request
-from flask_cors import (CORS, cross_origin)
 import os
 
 
@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.register_blueprint(app_views)
 CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = None
-AUTH_TYPE = getenv("AUTH_TYPE")
+AUTH_TYPE = getenv('AUTH_TYPE')
 
 if AUTH_TYPE == "auth":
     from api.v1.auth.auth import Auth
@@ -31,39 +31,52 @@ def not_found(error) -> str:
 
 
 @app.errorhandler(401)
-def unauthorized_error(error) -> str:
-    """ Unauthorized handler
+def unauthorized(error) -> str:
+    """Handle a unauthorized access
+
+        Args:
+            error: Error catch
+
+        Return:
+            Info of the error
     """
     return jsonify({"error": "Unauthorized"}), 401
 
 
 @app.errorhandler(403)
-def forbidden_error(error) -> str:
-    """ Forbidden handler
+def forbidden(error) -> str:
+    """Handle a forbidden resource
+
+        Args:
+            error: Error catch
+
+        Return:
+            Info of the error
     """
     return jsonify({"error": "Forbidden"}), 403
 
 
 @app.before_request
 def before_request() -> str:
-    """ Before Request Handler
+    """Execute before each request
 
-    Requests Validation
+        Return:
+            String or nothing
     """
     if auth is None:
         return
 
-    excluded_paths = ['/api/v1/status/',
-                      '/api/v1/unauthorized/',
-                      '/api/v1/forbidden/']
+    expath = ['/api/v1/status/',
+              '/api/v1/unauthorized/',
+              '/api/v1/forbidden/']
 
-    if not auth.require_auth(request.path, excluded_paths):
+    if not (auth.require_auth(request.path, expath)):
         return
 
-    if auth.authorization_header(request) is None:
+    if (auth.authorization_header(request)) is None:
         abort(401)
 
-    if auth.current_user(request) is None:
+    if (auth.current_user(request)) is None:
         abort(403)
 
 
